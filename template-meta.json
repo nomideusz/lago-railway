@@ -6,5 +6,6 @@
   "image": "https://cdn.jsdelivr.net/gh/nomideusz/lago-railway/icon.svg",
   "card_desc": "Lago usage-based billing: meter events, apply plans, credits and coupons, and issue PDF invoices on schedule \u2014 the complete stack with worker, clock and PDF renderer, admin seeded and sign-up closed.",
   "deploy_marker": "nomideusz/lago-railway",
-  "id": "c1f17372-41e2-40a4-846d-05de9d899b9b"
+  "id": "c1f17372-41e2-40a4-846d-05de9d899b9b",
+  "published": true
 }
