@@ -1,0 +1,320 @@
+{
+  "services": {
+    "cf6274db-4f46-403a-9ec9-66046214a79b": {
+      "icon": "https://cdn.jsdelivr.net/gh/nomideusz/lago-railway/icon.svg",
+      "name": "Lago",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "getlago/front:v1.54.0"
+      },
+      "networking": {
+        "serviceDomains": {
+          "<hasDomain>": {}
+        }
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "80",
+          "description": "Port nginx listens on - leave as is",
+          "isOptional": false
+        },
+        "API_URL": {
+          "defaultValue": "https://${{API.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the Lago API",
+          "isOptional": false
+        },
+        "APP_ENV": {
+          "defaultValue": "production",
+          "description": "Frontend environment",
+          "isOptional": false
+        },
+        "LAGO_DISABLE_SIGNUP": {
+          "defaultValue": "${{API.LAGO_DISABLE_SIGNUP}}",
+          "description": "Hides the sign-up page when the API has it closed",
+          "isOptional": false
+        },
+        "LAGO_OAUTH_PROXY_URL": {
+          "defaultValue": "https://proxy.getlago.com",
+          "description": "Lago's OAuth proxy for payment provider connections",
+          "isOptional": false
+        }
+      }
+    },
+    "a88189b0-8834-426e-b711-1cbd8a04a387": {
+      "icon": "https://cdn.jsdelivr.net/gh/nomideusz/lago-railway/icon.svg",
+      "name": "API",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ALWAYS",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/lago-railway",
+        "rootDirectory": "/api"
+      },
+      "networking": {
+        "serviceDomains": {
+          "<hasDomain>": {}
+        }
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "3000",
+          "description": "Port the Rails API listens on - leave as is",
+          "isOptional": false
+        },
+        "RAILWAY_HEALTHCHECK_TIMEOUT_SEC": {
+          "defaultValue": "600",
+          "description": "First boot loads the database schema before /health answers",
+          "isOptional": false
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "30",
+          "description": "Lets Sidekiq finish or requeue running jobs on redeploy",
+          "isOptional": false
+        },
+        "RAILS_ENV": {
+          "defaultValue": "production",
+          "description": "Rails environment",
+          "isOptional": false
+        },
+        "RAILS_LOG_TO_STDOUT": {
+          "defaultValue": "true",
+          "description": "Send logs to Railway's log view",
+          "isOptional": false
+        },
+        "DATABASE_URL": {
+          "defaultValue": "postgresql://${{Postgres.POSTGRES_USER}}:${{Postgres.POSTGRES_PASSWORD}}@${{Postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/${{Postgres.POSTGRES_DB}}",
+          "description": "Postgres on the private network",
+          "isOptional": false
+        },
+        "REDIS_URL": {
+          "defaultValue": "redis://default:${{Redis.REDIS_PASSWORD}}@${{Redis.RAILWAY_PRIVATE_DOMAIN}}:6379",
+          "description": "Redis on the private network - Sidekiq queues and live updates",
+          "isOptional": false
+        },
+        "REDIS_PASSWORD": {
+          "defaultValue": "${{Redis.REDIS_PASSWORD}}",
+          "description": "Redis password",
+          "isOptional": false
+        },
+        "SECRET_KEY_BASE": {
+          "defaultValue": "${{secret(64, \"abcdef0123456789\")}}",
+          "description": "Auto-generated Rails secret",
+          "isOptional": false
+        },
+        "LAGO_ENCRYPTION_PRIMARY_KEY": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Auto-generated key encrypting integration credentials at rest",
+          "isOptional": false
+        },
+        "LAGO_ENCRYPTION_DETERMINISTIC_KEY": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Auto-generated deterministic encryption key",
+          "isOptional": false
+        },
+        "LAGO_ENCRYPTION_KEY_DERIVATION_SALT": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Auto-generated key derivation salt",
+          "isOptional": false
+        },
+        "LAGO_API_URL": {
+          "defaultValue": "https://${{RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of this API - used in invoice links and webhooks",
+          "isOptional": false
+        },
+        "LAGO_FRONT_URL": {
+          "defaultValue": "https://${{Lago.RAILWAY_PUBLIC_DOMAIN}}",
+          "description": "Public URL of the dashboard - the only origin allowed to call the API from a browser",
+          "isOptional": false
+        },
+        "LAGO_PDF_URL": {
+          "defaultValue": "http://${{PDF.RAILWAY_PRIVATE_DOMAIN}}:3000",
+          "description": "Invoice PDF renderer on the private network",
+          "isOptional": false
+        },
+        "LAGO_CREATE_ORG": {
+          "defaultValue": "true",
+          "description": "Create the organization and admin account below on first boot",
+          "isOptional": false
+        },
+        "LAGO_ORG_NAME": {
+          "defaultValue": "",
+          "description": "Your company name - printed as the sender on invoices",
+          "isOptional": false
+        },
+        "LAGO_ORG_USER_EMAIL": {
+          "defaultValue": "",
+          "description": "Admin login email",
+          "isOptional": false
+        },
+        "LAGO_ORG_USER_PASSWORD": {
+          "defaultValue": "${{secret(24, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Auto-generated admin password - copy it from this service's Variables tab",
+          "isOptional": false
+        },
+        "LAGO_DISABLE_SIGNUP": {
+          "defaultValue": "true",
+          "description": "Public sign-up stays closed; invite teammates from Settings > Members",
+          "isOptional": false
+        },
+        "LAGO_SIDEKIQ_WEB": {
+          "defaultValue": "false",
+          "description": "Sidekiq's job dashboard has no login of its own, so it stays off",
+          "isOptional": false
+        },
+        "LAGO_DISABLE_SEGMENT": {
+          "defaultValue": "true",
+          "description": "No usage telemetry to Lago",
+          "isOptional": false
+        },
+        "LAGO_OAUTH_PROXY_URL": {
+          "defaultValue": "https://proxy.getlago.com",
+          "description": "Lago's OAuth proxy for payment provider connections",
+          "isOptional": false
+        },
+        "LAGO_FROM_EMAIL": {
+          "defaultValue": "",
+          "description": "Sender address for invoice emails",
+          "isOptional": true
+        },
+        "LAGO_SMTP_ADDRESS": {
+          "defaultValue": "",
+          "description": "SMTP host for invoice emails (Railway Pro or above; Hobby blocks outbound SMTP)",
+          "isOptional": true
+        },
+        "LAGO_SMTP_PORT": {
+          "defaultValue": "587",
+          "description": "SMTP port",
+          "isOptional": true
+        },
+        "LAGO_SMTP_USERNAME": {
+          "defaultValue": "",
+          "description": "SMTP username",
+          "isOptional": true
+        },
+        "LAGO_SMTP_PASSWORD": {
+          "defaultValue": "",
+          "description": "SMTP password",
+          "isOptional": true
+        }
+      },
+      "volumeMounts": {
+        "b117bf38-0393-448f-843a-1277c3bd75e1": {
+          "mountPath": "/data"
+        }
+      }
+    },
+    "44c6206d-273f-48e2-ac63-850a11584b0b": {
+      "icon": "https://cdn.jsdelivr.net/gh/nomideusz/lago-railway/icon.svg",
+      "name": "PDF",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": "/health",
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "getlago/lago-gotenberg:7.8.2"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "3000",
+          "description": "Port Gotenberg listens on - leave as is",
+          "isOptional": false
+        }
+      }
+    },
+    "fb06f76a-3f58-4a6b-a6e7-315cd5b0a60c": {
+      "icon": "https://devicons.railway.app/i/postgresql.svg",
+      "name": "Postgres",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/lago-railway",
+        "rootDirectory": "/postgres"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "variables": {
+        "POSTGRES_DB": {
+          "defaultValue": "lago",
+          "description": "Database name",
+          "isOptional": false
+        },
+        "POSTGRES_USER": {
+          "defaultValue": "lago",
+          "description": "Database user",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Auto-generated database password",
+          "isOptional": false
+        },
+        "PGDATA": {
+          "defaultValue": "/var/lib/postgresql/data/pgdata",
+          "description": "Data subdirectory - keeps Postgres happy on Railway volumes",
+          "isOptional": false
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "30",
+          "description": "Time for Postgres to shut down cleanly on redeploy",
+          "isOptional": false
+        }
+      },
+      "volumeMounts": {
+        "48909b82-2d25-40a7-b480-fe1c73f88814": {
+          "mountPath": "/var/lib/postgresql/data"
+        }
+      }
+    },
+    "55a2177b-2254-4eb9-b5ed-2db2563abfd2": {
+      "icon": "https://devicons.railway.app/i/redis.svg",
+      "name": "Redis",
+      "build": {},
+      "deploy": {
+        "startCommand": "/bin/sh -c \"rm -rf /data/lost+found && exec docker-entrypoint.sh redis-server --requirepass $REDIS_PASSWORD --maxmemory-policy noeviction --appendonly yes --dir /data\"",
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "redis:8.10.2-alpine"
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "variables": {
+        "REDIS_PASSWORD": {
+          "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+          "description": "Auto-generated Redis password",
+          "isOptional": false
+        }
+      },
+      "volumeMounts": {
+        "b5eae196-26ba-4257-a2a2-910806363d26": {
+          "mountPath": "/data"
+        }
+      }
+    }
+  }
+}

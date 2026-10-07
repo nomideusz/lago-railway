@@ -1,0 +1,9 @@
+{
+  "name": "Lago Production | Open-Source Usage-Based Billing, Stripe Billing Alternative",
+  "short_name": "Lago Production",
+  "description": "Usage-based billing with the worker, clock and PDF invoices that bill",
+  "category": "Automation",
+  "image": "https://cdn.jsdelivr.net/gh/nomideusz/lago-railway/icon.svg",
+  "card_desc": "Lago usage-based billing: meter events, apply plans, credits and coupons, and issue PDF invoices on schedule — the complete stack with worker, clock and PDF renderer, admin seeded and sign-up closed.",
+  "deploy_marker": "nomideusz/lago-railway"
+}
